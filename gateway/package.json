@@ -5,9 +5,11 @@
   "main": "bridge.js",
   "scripts": {
     "start": "node bridge.js",
+    "mqtt": "node mqtt-bridge.js",
     "simulate": "node simulator.js"
   },
   "dependencies": {
-    "@ncd-io/node-red-enterprise-sensors": "^1.6.4"
+    "@ncd-io/node-red-enterprise-sensors": "^1.6.4",
+    "mqtt": "^5.15.0"
   }
 }
