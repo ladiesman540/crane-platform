@@ -1,0 +1,13 @@
+{
+  "name": "crane-gateway",
+  "version": "1.0.0",
+  "description": "Bridge between NCD wireless sensors and the Crane Platform API",
+  "main": "bridge.js",
+  "scripts": {
+    "start": "node bridge.js",
+    "simulate": "node simulator.js"
+  },
+  "dependencies": {
+    "@ncd-io/node-red-enterprise-sensors": "^1.6.4"
+  }
+}

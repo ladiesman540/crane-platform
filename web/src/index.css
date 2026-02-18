@@ -1,0 +1,102 @@
+:root {
+  /* Base palette */
+  --bg-root: #f4f6f9;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f2f5;
+  --bg-hover: #e8ecf1;
+  --border: rgba(0, 0, 0, 0.07);
+  --border-strong: rgba(0, 0, 0, 0.12);
+
+  /* Text */
+  --text-primary: #1a1f2e;
+  --text-secondary: #5c6478;
+  --text-tertiary: #9099ad;
+  --text-inverse: #ffffff;
+
+  /* Accents */
+  --accent: #0b7285;
+  --accent-glow: rgba(11, 114, 133, 0.08);
+  --accent-dim: rgba(11, 114, 133, 0.5);
+
+  /* Severity */
+  --zone-a: #0d9668;
+  --zone-a-glow: rgba(13, 150, 104, 0.08);
+  --zone-b: #0b7285;
+  --zone-b-glow: rgba(11, 114, 133, 0.08);
+  --zone-c: #d97706;
+  --zone-c-glow: rgba(217, 119, 6, 0.08);
+  --zone-d: #dc2626;
+  --zone-d-glow: rgba(220, 38, 38, 0.08);
+
+  /* Misc */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+  --sidebar-width: 272px;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-display);
+  background: var(--bg-root);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 20px var(--accent-glow); }
+}
+
+.animate-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-in-delay-1 { animation-delay: 0.05s; }
+.animate-in-delay-2 { animation-delay: 0.1s; }
+.animate-in-delay-3 { animation-delay: 0.15s; }
+.animate-in-delay-4 { animation-delay: 0.2s; }
+.animate-in-delay-5 { animation-delay: 0.25s; }
