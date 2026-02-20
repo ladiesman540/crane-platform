@@ -88,18 +88,19 @@ export default function Dashboard() {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 28 }}>
         <h1 style={{
           fontFamily: "var(--font-display)",
           fontWeight: 700,
-          fontSize: 28,
-          letterSpacing: "-0.03em",
-          marginBottom: 6,
+          fontSize: 26,
+          letterSpacing: "0.02em",
+          marginBottom: 4,
+          color: "var(--text-primary)",
         }}>System Overview</h1>
         <p style={{
-          fontSize: 14,
-          color: "var(--text-secondary)",
-          fontFamily: "var(--font-display)",
+          fontSize: 13,
+          color: "var(--text-tertiary)",
+          fontFamily: "var(--font-mono)",
         }}>
           Real-time monitoring across {sensors.length} sensors
         </p>
@@ -108,8 +109,8 @@ export default function Dashboard() {
       {/* Zone summary strip */}
       <div style={{
         display: "flex",
-        gap: 12,
-        marginBottom: 28,
+        gap: 10,
+        marginBottom: 24,
       }}>
         {[
           { label: "Excellent", count: zoneCounts.a, color: "var(--zone-a)", glow: "var(--zone-a-glow)" },
@@ -125,9 +126,8 @@ export default function Dashboard() {
               flex: 1,
               padding: "14px 16px",
               borderRadius: "var(--radius)",
-              background: z.glow,
-              border: `1px solid ${z.count > 0 ? z.color : "var(--border)"}`,
-              borderColor: z.count > 0 ? undefined : "var(--border)",
+              background: z.count > 0 ? z.glow : "var(--bg-surface)",
+              border: `1px solid ${z.count > 0 ? z.color + "33" : "var(--border)"}`,
               opacity: z.count > 0 ? 1 : 0.5,
               transition: "all 0.3s",
             }}
@@ -135,16 +135,18 @@ export default function Dashboard() {
             <div style={{
               fontFamily: "var(--font-mono)",
               fontSize: 28,
-              fontWeight: 500,
+              fontWeight: 600,
               color: z.count > 0 ? z.color : "var(--text-tertiary)",
               lineHeight: 1,
-              marginBottom: 4,
+              marginBottom: 6,
+              textShadow: z.count > 0 ? `0 0 20px ${z.glow}` : "none",
             }}>{z.count}</div>
             <div style={{
-              fontSize: 11,
-              color: "var(--text-secondary)",
+              fontSize: 10,
+              color: "var(--text-tertiary)",
               textTransform: "uppercase",
-              letterSpacing: "0.05em",
+              letterSpacing: "0.08em",
+              fontFamily: "var(--font-mono)",
             }}>{z.label}</div>
           </div>
         ))}
@@ -154,7 +156,7 @@ export default function Dashboard() {
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-        gap: 16,
+        gap: 14,
       }}>
         {sensors.map((sensor, i) => (
           <SensorCard key={sensor.id} sensor={sensor} delay={i} />
@@ -165,11 +167,12 @@ export default function Dashboard() {
             padding: 60,
             textAlign: "center",
             color: "var(--text-tertiary)",
-            border: "1px dashed var(--border)",
+            border: "1px dashed var(--border-strong)",
             borderRadius: "var(--radius-lg)",
+            background: "var(--bg-surface)",
           }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>No sensors detected</div>
-            <div style={{ fontSize: 14 }}>Register sensors via the API to begin monitoring</div>
+            <div style={{ fontSize: 28, marginBottom: 12, fontFamily: "var(--font-display)" }}>No sensors detected</div>
+            <div style={{ fontSize: 13, fontFamily: "var(--font-mono)" }}>Register sensors via the API to begin monitoring</div>
           </div>
         )}
       </div>
@@ -204,31 +207,31 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
         color: "inherit",
         background: "var(--bg-surface)",
         border: "1px solid var(--border)",
-        borderRadius: "var(--radius-lg)",
+        borderRadius: "var(--radius)",
         padding: 0,
         overflow: "hidden",
         transition: "all 0.2s",
         cursor: "pointer",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-strong)";
+        e.currentTarget.style.borderColor = "var(--accent)" + "44";
         e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,0,0,0.08)`;
+        e.currentTarget.style.boxShadow = "0 8px 32px rgba(6, 182, 212, 0.08)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
         e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.boxShadow = "none";
       }}
     >
       {/* Zone bar at top */}
       <div style={{
-        height: 3,
-        background: zone.color,
+        height: 2,
+        background: `linear-gradient(90deg, ${zone.color}, transparent)`,
         opacity: 0.8,
       }} />
 
-      <div style={{ padding: "16px 20px 20px" }}>
+      <div style={{ padding: "16px 20px 18px" }}>
         {/* Header */}
         <div style={{
           display: "flex",
@@ -240,41 +243,46 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
             <div style={{
               fontWeight: 600,
               fontSize: 15,
-              letterSpacing: "-0.01em",
+              letterSpacing: "0.01em",
               marginBottom: 3,
+              fontFamily: "var(--font-display)",
+              color: "var(--text-primary)",
             }}>{sensor.label || sensor.mac_address}</div>
             <div style={{
               fontFamily: "var(--font-mono)",
-              fontSize: 11,
+              fontSize: 10,
               color: "var(--text-tertiary)",
             }}>{sensor.mac_address}</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {/* Status */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{
-                width: 6,
-                height: 6,
+                width: 5,
+                height: 5,
                 borderRadius: "50%",
                 background: statusColor,
+                boxShadow: statusLabel === "Live" ? `0 0 8px ${statusColor}` : "none",
                 animation: statusLabel === "Live" ? "pulse-live 2s ease-in-out infinite" : "none",
               }} />
               <span style={{
-                fontSize: 11,
+                fontSize: 10,
                 color: statusColor,
                 fontFamily: "var(--font-mono)",
+                fontWeight: 500,
               }}>{statusLabel}</span>
             </div>
             {/* Zone badge */}
             <div style={{
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: 600,
               fontFamily: "var(--font-mono)",
               color: zone.color,
               background: zone.glow,
               padding: "3px 8px",
-              borderRadius: 4,
-              letterSpacing: "0.05em",
+              borderRadius: 3,
+              letterSpacing: "0.06em",
+              border: `1px solid ${zone.color}22`,
             }}>{zone.name}</div>
           </div>
         </div>
@@ -298,8 +306,9 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
             textAlign: "center",
             padding: "20px 0",
             color: "var(--text-tertiary)",
-            fontSize: 13,
+            fontSize: 11,
             fontFamily: "var(--font-mono)",
+            letterSpacing: "0.08em",
           }}>AWAITING FIRST READING</div>
         )}
       </div>
@@ -317,11 +326,11 @@ function DataCell({ label, value, unit, color, warn }: {
   return (
     <div>
       <div style={{
-        fontSize: 10,
+        fontSize: 9,
         color: "var(--text-tertiary)",
         fontFamily: "var(--font-mono)",
-        letterSpacing: "0.06em",
-        marginBottom: 3,
+        letterSpacing: "0.08em",
+        marginBottom: 4,
       }}>{label}</div>
       <div style={{
         fontFamily: "var(--font-mono)",
@@ -332,7 +341,7 @@ function DataCell({ label, value, unit, color, warn }: {
       }}>
         {value !== null && value !== undefined ? value.toFixed(value >= 100 ? 0 : 2) : "--"}
         <span style={{
-          fontSize: 10,
+          fontSize: 9,
           color: "var(--text-tertiary)",
           marginLeft: 3,
         }}>{unit}</span>

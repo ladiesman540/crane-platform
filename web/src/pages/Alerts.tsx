@@ -17,13 +17,15 @@ export default function Alerts() {
         <h1 style={{
           fontFamily: "var(--font-display)",
           fontWeight: 700,
-          fontSize: 28,
-          letterSpacing: "-0.03em",
-          marginBottom: 6,
+          fontSize: 26,
+          letterSpacing: "0.02em",
+          marginBottom: 4,
+          color: "var(--text-primary)",
         }}>Alerts</h1>
         <p style={{
-          fontSize: 14,
-          color: "var(--text-secondary)",
+          fontSize: 13,
+          color: "var(--text-tertiary)",
+          fontFamily: "var(--font-mono)",
         }}>
           {mockAlerts.filter(a => a.status === "open").length} active alerts requiring attention
         </p>
@@ -41,10 +43,10 @@ export default function Alerts() {
                 display: "flex",
                 alignItems: "center",
                 gap: 16,
-                padding: "16px 20px",
+                padding: "14px 20px",
                 background: "var(--bg-surface)",
                 border: "1px solid var(--border)",
-                borderLeft: `3px solid ${sev.color}`,
+                borderLeft: `2px solid ${sev.color}`,
                 borderRadius: "var(--radius)",
                 transition: "all 0.15s",
                 cursor: "pointer",
@@ -52,10 +54,12 @@ export default function Alerts() {
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = "var(--border-strong)";
                 e.currentTarget.style.borderLeftColor = sev.color;
+                e.currentTarget.style.background = "var(--bg-elevated)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "var(--border)";
                 e.currentTarget.style.borderLeftColor = sev.color;
+                e.currentTarget.style.background = "var(--bg-surface)";
               }}
             >
               {/* Severity badge */}
@@ -66,22 +70,25 @@ export default function Alerts() {
                 color: sev.color,
                 background: sev.glow,
                 padding: "3px 8px",
-                borderRadius: 4,
+                borderRadius: 3,
                 letterSpacing: "0.08em",
                 flexShrink: 0,
                 width: 72,
                 textAlign: "center",
+                border: `1px solid ${sev.color}22`,
               }}>{sev.label}</div>
 
               {/* Content */}
               <div style={{ flex: 1 }}>
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: 500,
                   marginBottom: 3,
+                  color: "var(--text-primary)",
+                  fontFamily: "var(--font-display)",
                 }}>{alert.message}</div>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 11,
                   fontFamily: "var(--font-mono)",
                   color: "var(--text-tertiary)",
                 }}>{alert.sensor}</div>
@@ -89,7 +96,7 @@ export default function Alerts() {
 
               {/* Time */}
               <div style={{
-                fontSize: 11,
+                fontSize: 10,
                 fontFamily: "var(--font-mono)",
                 color: "var(--text-tertiary)",
                 flexShrink: 0,
@@ -97,13 +104,13 @@ export default function Alerts() {
 
               {/* Status */}
               <div style={{
-                fontSize: 10,
+                fontSize: 9,
                 fontFamily: "var(--font-mono)",
-                color: alert.status === "open" ? "var(--text-secondary)" : "var(--text-tertiary)",
+                color: alert.status === "open" ? "var(--zone-c)" : "var(--text-tertiary)",
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
                 flexShrink: 0,
-                width: 100,
+                width: 90,
                 textAlign: "right",
               }}>
                 {alert.status === "open" ? "Needs action" : "Acknowledged"}
@@ -115,11 +122,11 @@ export default function Alerts() {
 
       <div style={{
         marginTop: 24,
-        padding: "16px 20px",
+        padding: "14px 20px",
         background: "var(--bg-surface)",
-        border: "1px dashed var(--border)",
+        border: "1px dashed var(--border-strong)",
         borderRadius: "var(--radius)",
-        fontSize: 13,
+        fontSize: 12,
         color: "var(--text-tertiary)",
         textAlign: "center",
         fontFamily: "var(--font-mono)",

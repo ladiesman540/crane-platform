@@ -29,7 +29,6 @@ export default function Layout() {
       setFacilities(f);
       setCranes(c);
       setSensors(s);
-      // Auto-expand first facility and crane
       if (f.length > 0) {
         const exp: Record<string, boolean> = { [f[0].id]: true };
         const firstCrane = c.find((cr: Crane) => cr.facility_id === f[0].id);
@@ -61,20 +60,21 @@ export default function Layout() {
       }}>
         {/* Logo */}
         <div style={{
-          padding: "20px 20px 16px",
+          padding: "20px 18px 16px",
           borderBottom: "1px solid var(--border)",
           display: "flex",
           alignItems: "center",
           gap: 10,
         }}>
           <div style={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
+            width: 34,
+            height: 34,
+            borderRadius: 6,
             background: "linear-gradient(135deg, var(--accent) 0%, #0891b2 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            boxShadow: "0 0 20px rgba(6, 182, 212, 0.25)",
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
               <path d="M2 20h20M6 20V8l6-4 6 4v12M10 20v-6h4v6" />
@@ -83,22 +83,24 @@ export default function Layout() {
           <div>
             <div style={{
               fontWeight: 700,
-              fontSize: 15,
-              letterSpacing: "-0.02em",
+              fontSize: 16,
+              letterSpacing: "0.12em",
               color: "var(--text-primary)",
+              fontFamily: "var(--font-display)",
             }}>CRANE</div>
             <div style={{
-              fontSize: 10,
-              color: "var(--text-tertiary)",
+              fontSize: 9,
+              color: "var(--accent)",
               fontFamily: "var(--font-mono)",
               textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.14em",
+              fontWeight: 500,
             }}>Predictive Mx</div>
           </div>
         </div>
 
         {/* Nav links */}
-        <div style={{ padding: "12px 10px 4px" }}>
+        <div style={{ padding: "12px 8px 4px" }}>
           {NAV_ITEMS.map((item) => {
             const active = location.pathname === item.path;
             return (
@@ -114,10 +116,12 @@ export default function Layout() {
                   textDecoration: "none",
                   fontSize: 13,
                   fontWeight: active ? 600 : 400,
-                  color: active ? "var(--text-primary)" : "var(--text-secondary)",
-                  background: active ? "var(--bg-elevated)" : "transparent",
+                  color: active ? "var(--accent-bright)" : "var(--text-secondary)",
+                  background: active ? "var(--accent-glow)" : "transparent",
+                  borderLeft: active ? "2px solid var(--accent)" : "2px solid transparent",
                   transition: "all 0.15s",
                   marginBottom: 2,
+                  fontFamily: "var(--font-display)",
                 }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -133,17 +137,18 @@ export default function Layout() {
 
         {/* Asset tree */}
         <div style={{
-          padding: "8px 10px",
+          padding: "8px 8px",
           flex: 1,
           overflowY: "auto",
         }}>
           <div style={{
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: 600,
             color: "var(--text-tertiary)",
             textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            padding: "12px 12px 8px",
+            letterSpacing: "0.14em",
+            padding: "14px 12px 8px",
+            fontFamily: "var(--font-mono)",
           }}>
             Asset Tree
           </div>
@@ -163,6 +168,7 @@ export default function Layout() {
                   fontWeight: 500,
                   color: "var(--text-primary)",
                   transition: "background 0.15s",
+                  fontFamily: "var(--font-display)",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-hover)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
@@ -198,6 +204,7 @@ export default function Layout() {
                         fontSize: 13,
                         color: "var(--text-secondary)",
                         transition: "all 0.15s",
+                        fontFamily: "var(--font-display)",
                       }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-hover)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
@@ -227,13 +234,13 @@ export default function Layout() {
                             display: "flex",
                             alignItems: "center",
                             gap: 8,
-                            padding: "6px 12px 6px 24px",
+                            padding: "6px 12px 6px 20px",
                             marginLeft: 12,
                             borderRadius: "var(--radius-sm)",
                             textDecoration: "none",
-                            fontSize: 12,
+                            fontSize: 11,
                             fontFamily: "var(--font-mono)",
-                            color: isActive ? "var(--accent)" : "var(--text-tertiary)",
+                            color: isActive ? "var(--accent-bright)" : "var(--text-tertiary)",
                             background: isActive ? "var(--accent-glow)" : "transparent",
                             transition: "all 0.15s",
                           }}
@@ -241,8 +248,8 @@ export default function Layout() {
                           onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                         >
                           <div style={{
-                            width: 6,
-                            height: 6,
+                            width: 5,
+                            height: 5,
                             borderRadius: "50%",
                             background: "var(--zone-a)",
                             animation: "pulse-live 2s ease-in-out infinite",
@@ -260,7 +267,7 @@ export default function Layout() {
 
         {/* Footer */}
         <div style={{
-          padding: "12px 10px",
+          padding: "10px 8px",
           borderTop: "1px solid var(--border)",
         }}>
           <button
@@ -282,12 +289,14 @@ export default function Layout() {
               transition: "all 0.15s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)";
+              e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)";
               e.currentTarget.style.color = "var(--zone-d)";
+              e.currentTarget.style.background = "rgba(239,68,68,0.05)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
               e.currentTarget.style.color = "var(--text-secondary)";
+              e.currentTarget.style.background = "transparent";
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -302,7 +311,7 @@ export default function Layout() {
       <main className="grid-bg" style={{
         flex: 1,
         overflowY: "auto",
-        padding: "28px 36px",
+        padding: "24px 32px",
         position: "relative",
       }}>
         <div style={{ position: "relative", zIndex: 1 }}>
