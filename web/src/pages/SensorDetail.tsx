@@ -61,6 +61,7 @@ export default function SensorDetail() {
     x: r.x_velocity_mm_sec,
     y: r.y_velocity_mm_sec,
     z: r.z_velocity_mm_sec,
+    temp: r.temperature,
   }));
 
   const latest = readings[readings.length - 1];
@@ -354,6 +355,111 @@ export default function SensorDetail() {
           ))}
         </div>
       </div>
+
+      {/* Temperature trend chart */}
+      {chartData.some((d) => d.temp !== null && d.temp !== undefined && d.temp !== 0) && (
+        <div
+          className="animate-in animate-in-delay-4"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-lg)",
+            padding: "24px 24px 16px",
+            marginBottom: 16,
+          }}
+        >
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 20,
+          }}>
+            <div>
+              <h2 style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 600,
+                fontSize: 16,
+                letterSpacing: "-0.01em",
+                marginBottom: 2,
+              }}>Temperature Trend</h2>
+              <span style={{
+                fontSize: 12,
+                color: "var(--text-tertiary)",
+                fontFamily: "var(--font-mono)",
+              }}>
+                {latest?.temperature !== null && latest?.temperature !== undefined
+                  ? `Current: ${latest.temperature.toFixed(1)}°C`
+                  : "No data"}
+              </span>
+            </div>
+            <div style={{
+              display: "flex",
+              gap: 16,
+              fontSize: 11,
+              fontFamily: "var(--font-mono)",
+            }}>
+              <span style={{ color: "#e8860c" }}>━ Temperature</span>
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(0,0,0,0.06)"
+                vertical={false}
+              />
+              <XAxis
+                dataKey="time"
+                tick={{ fontSize: 10, fill: "#9099ad", fontFamily: "DM Mono" }}
+                axisLine={{ stroke: "rgba(0,0,0,0.08)" }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 10, fill: "#9099ad", fontFamily: "DM Mono" }}
+                axisLine={false}
+                tickLine={false}
+                domain={["dataMin - 1", "dataMax + 1"]}
+                tickFormatter={(v: number) => `${v}°`}
+              />
+              <Tooltip
+                content={({ active, payload, label }: any) => {
+                  if (!active || !payload?.[0]) return null;
+                  return (
+                    <div style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border-strong)",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                      borderRadius: "var(--radius-sm)",
+                      padding: "10px 14px",
+                      fontSize: 12,
+                      fontFamily: "var(--font-mono)",
+                    }}>
+                      <div style={{ color: "var(--text-secondary)", marginBottom: 6 }}>{label}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 8, height: 2, background: "#e8860c", borderRadius: 1 }} />
+                        <span style={{ color: "var(--text-secondary)" }}>Temp:</span>
+                        <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>
+                          {payload[0].value?.toFixed(1)}°C
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="temp"
+                stroke="#e8860c"
+                strokeWidth={2}
+                dot={false}
+                name="Temperature"
+                connectNulls
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
