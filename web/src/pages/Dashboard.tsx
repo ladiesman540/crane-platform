@@ -17,6 +17,23 @@ interface SensorSummary {
   };
 }
 
+function formatTimeAgo(timestamp: string): string {
+  const ms = Date.now() - new Date(timestamp).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function formatTimestamp(timestamp: string): string {
+  const d = new Date(timestamp);
+  return d.toLocaleDateString([], { month: "short", day: "numeric" }) +
+    " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
 function getZone(vel: number | null): { name: string; color: string; glow: string; level: string } {
   if (vel === null) return { name: "OFFLINE", color: "var(--text-tertiary)", glow: "transparent", level: "--" };
   if (vel < 0.71) return { name: "ZONE A", color: "var(--zone-a)", glow: "var(--zone-a-glow)", level: "Excellent" };
@@ -106,6 +123,57 @@ export default function Dashboard() {
         </p>
       </div>
 
+      {/* System health banner */}
+      {(() => {
+        const sensorsWithData = sensors.filter((s) => s.latest);
+        if (sensorsWithData.length === 0) return null;
+        const allStale = sensorsWithData.every((s) => {
+          const mins = Math.round((Date.now() - new Date(s.latest!.timestamp).getTime()) / 60000);
+          return mins > 30;
+        });
+        if (!allStale) return null;
+        const mostRecent = sensorsWithData.reduce((a, b) =>
+          new Date(a.latest!.timestamp) > new Date(b.latest!.timestamp) ? a : b
+        );
+        return (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "12px 18px",
+            marginBottom: 20,
+            borderRadius: "var(--radius)",
+            background: "rgba(239, 68, 68, 0.08)",
+            border: "1px solid rgba(239, 68, 68, 0.25)",
+          }}>
+            <div style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: "#ef4444",
+              flexShrink: 0,
+              animation: "pulse-live 2s ease-in-out infinite",
+            }} />
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 600,
+                fontSize: 13,
+                color: "#ef4444",
+                marginBottom: 2,
+              }}>All sensors offline — gateway may be down</div>
+              <div style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--text-tertiary)",
+              }}>
+                Last data received {formatTimeAgo(mostRecent.latest!.timestamp)} — {formatTimestamp(mostRecent.latest!.timestamp)}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Zone summary strip */}
       <div style={{
         display: "flex",
@@ -191,11 +259,16 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
     ? Math.round((Date.now() - new Date(latest.timestamp).getTime()) / 60000)
     : null;
   let statusColor = "var(--text-tertiary)";
-  let statusLabel = "Offline";
+  let statusLabel = "No data";
+  let statusDetail = "";
   if (timeSince !== null) {
     if (timeSince < 5) { statusColor = "var(--zone-a)"; statusLabel = "Live"; }
     else if (timeSince < 30) { statusColor = "var(--zone-c)"; statusLabel = `${timeSince}m ago`; }
-    else { statusColor = "var(--zone-d)"; statusLabel = "Offline"; }
+    else {
+      statusColor = "var(--zone-d)";
+      statusLabel = formatTimeAgo(latest!.timestamp);
+      statusDetail = formatTimestamp(latest!.timestamp);
+    }
   }
 
   return (
@@ -256,21 +329,30 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {/* Status */}
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{
-                width: 5,
-                height: 5,
-                borderRadius: "50%",
-                background: statusColor,
-                boxShadow: statusLabel === "Live" ? `0 0 8px ${statusColor}` : "none",
-                animation: statusLabel === "Live" ? "pulse-live 2s ease-in-out infinite" : "none",
-              }} />
-              <span style={{
-                fontSize: 10,
-                color: statusColor,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 500,
-              }}>{statusLabel}</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{
+                  width: 5,
+                  height: 5,
+                  borderRadius: "50%",
+                  background: statusColor,
+                  boxShadow: statusLabel === "Live" ? `0 0 8px ${statusColor}` : "none",
+                  animation: statusLabel === "Live" ? "pulse-live 2s ease-in-out infinite" : "none",
+                }} />
+                <span style={{
+                  fontSize: 10,
+                  color: statusColor,
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 500,
+                }}>{statusLabel}</span>
+              </div>
+              {statusDetail && (
+                <span style={{
+                  fontSize: 9,
+                  color: "var(--text-tertiary)",
+                  fontFamily: "var(--font-mono)",
+                }}>{statusDetail}</span>
+              )}
             </div>
             {/* Zone badge */}
             <div style={{

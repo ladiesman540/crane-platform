@@ -25,18 +25,50 @@ function getZone(vel: number | null) {
   return { name: "D", color: "var(--zone-d)", level: "Danger" };
 }
 
+type TimeRange = "1h" | "6h" | "24h" | "7d" | "all";
+
+const RANGES: { key: TimeRange; label: string; hours: number | null }[] = [
+  { key: "1h", label: "1H", hours: 1 },
+  { key: "6h", label: "6H", hours: 6 },
+  { key: "24h", label: "24H", hours: 24 },
+  { key: "7d", label: "7D", hours: 168 },
+  { key: "all", label: "ALL", hours: null },
+];
+
+function formatTimeAgo(timestamp: string): string {
+  const ms = Date.now() - new Date(timestamp).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
 export default function SensorDetail() {
   const { sensorId } = useParams<{ sensorId: string }>();
   const [readings, setReadings] = useState<Reading[]>([]);
   const [sensor, setSensor] = useState<any>(null);
+  const [range, setRange] = useState<TimeRange>("24h");
 
   useEffect(() => {
     if (!sensorId) return;
     api(`/api/v1/sensors/${sensorId}`).then((r) => r.json()).then(setSensor);
-    api(`/api/v1/readings?sensor_id=${sensorId}&limit=200`)
+  }, [sensorId]);
+
+  useEffect(() => {
+    if (!sensorId) return;
+    const selected = RANGES.find((r) => r.key === range)!;
+    const params = new URLSearchParams({ sensor_id: sensorId, limit: "1000" });
+    if (selected.hours !== null) {
+      const start = new Date(Date.now() - selected.hours * 3600000).toISOString();
+      params.set("start", start);
+    }
+    api(`/api/v1/readings?${params}`)
       .then((r) => r.json())
       .then((data: Reading[]) => setReadings(data.reverse()));
-  }, [sensorId]);
+  }, [sensorId, range]);
 
   useWebSocket((data) => {
     if (data.event === "sensor.reading" && data.sensor_id === sensorId) {
@@ -56,13 +88,15 @@ export default function SensorDetail() {
     }
   });
 
-  const chartData = readings.map((r) => ({
-    time: new Date(r.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    x: r.x_velocity_mm_sec,
-    y: r.y_velocity_mm_sec,
-    z: r.z_velocity_mm_sec,
-    temp: r.temperature,
-  }));
+  const showDate = range !== "1h";
+  const chartData = readings.map((r) => {
+    const d = new Date(r.timestamp);
+    const time = showDate
+      ? d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " +
+        d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return { time, x: r.x_velocity_mm_sec, y: r.y_velocity_mm_sec, z: r.z_velocity_mm_sec, temp: r.temperature };
+  });
 
   const latest = readings[readings.length - 1];
   const maxVel = latest
@@ -166,9 +200,24 @@ export default function SensorDetail() {
             fontFamily: "var(--font-mono)",
             fontSize: 12,
             color: "var(--text-tertiary)",
+            marginBottom: latest ? 4 : 0,
           }}>
             {sensor?.mac_address}
           </div>
+          {latest && (
+            <div style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              color: (() => {
+                const mins = Math.round((Date.now() - new Date(latest.timestamp).getTime()) / 60000);
+                if (mins < 5) return "var(--zone-a)";
+                if (mins < 30) return "var(--zone-c)";
+                return "var(--zone-d)";
+              })(),
+            }}>
+              Last reading: {new Date(latest.timestamp).toLocaleDateString([], { month: "short", day: "numeric" })} {new Date(latest.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ({formatTimeAgo(latest.timestamp)})
+            </div>
+          )}
         </div>
 
         {/* Zone display */}
@@ -306,15 +355,47 @@ export default function SensorDetail() {
               fontFamily: "var(--font-mono)",
             }}>{readings.length} readings</span>
           </div>
-          <div style={{
-            display: "flex",
-            gap: 14,
-            fontSize: 10,
-            fontFamily: "var(--font-mono)",
-          }}>
-            <span style={{ color: "#ef4444" }}>━ X</span>
-            <span style={{ color: "#3b82f6" }}>━ Y</span>
-            <span style={{ color: "#10b981" }}>━ Z</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {/* Time range buttons */}
+            <div style={{
+              display: "flex",
+              gap: 2,
+              background: "var(--bg-elevated)",
+              borderRadius: "var(--radius-sm)",
+              padding: 2,
+              border: "1px solid var(--border)",
+            }}>
+              {RANGES.map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => setRange(r.key)}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    padding: "4px 10px",
+                    border: "none",
+                    borderRadius: 3,
+                    cursor: "pointer",
+                    background: range === r.key ? "var(--accent)" : "transparent",
+                    color: range === r.key ? "#000" : "var(--text-tertiary)",
+                    transition: "all 0.15s",
+                    letterSpacing: "0.04em",
+                  }}
+                >{r.label}</button>
+              ))}
+            </div>
+            {/* Legend */}
+            <div style={{
+              display: "flex",
+              gap: 14,
+              fontSize: 10,
+              fontFamily: "var(--font-mono)",
+            }}>
+              <span style={{ color: "#ef4444" }}>━ X</span>
+              <span style={{ color: "#3b82f6" }}>━ Y</span>
+              <span style={{ color: "#10b981" }}>━ Z</span>
+            </div>
           </div>
         </div>
 
