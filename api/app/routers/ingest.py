@@ -48,6 +48,9 @@ async def ingest(
     mA2 = body.mA2 or sd.get("mA2")
     roll = body.roll or sd.get("Roll") or sd.get("roll")
     pitch = body.pitch or sd.get("Pitch") or sd.get("pitch")
+    channel_1 = body.channel_1 or sd.get("channel_1")
+    channel_2 = body.channel_2 or sd.get("channel_2")
+    channel_3 = body.channel_3 or sd.get("channel_3")
     temperature = body.temperature or sd.get("temperature")
 
     # Store summary reading
@@ -85,6 +88,9 @@ async def ingest(
         mA2=mA2,
         roll=roll,
         pitch=pitch,
+        channel_1=channel_1,
+        channel_2=channel_2,
+        channel_3=channel_3,
     )
     db.add(reading)
     await db.flush()
@@ -118,6 +124,9 @@ async def ingest(
         "mA2": mA2,
         "roll": roll,
         "pitch": pitch,
+        "channel_1": channel_1,
+        "channel_2": channel_2,
+        "channel_3": channel_3,
     })
 
     return IngestResponse(status="ok", reading_id=reading.id)

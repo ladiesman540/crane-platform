@@ -18,6 +18,9 @@ interface SensorSummary {
     mA2: number | null;
     roll: number | null;
     pitch: number | null;
+    channel_1: number | null;
+    channel_2: number | null;
+    channel_3: number | null;
     timestamp: string;
   };
 }
@@ -86,6 +89,9 @@ export default function Dashboard() {
                   mA2: data.mA2,
                   roll: data.roll,
                   pitch: data.pitch,
+                  channel_1: data.channel_1,
+                  channel_2: data.channel_2,
+                  channel_3: data.channel_3,
                   timestamp: new Date().toISOString(),
                 },
               }
@@ -385,7 +391,13 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
             gridTemplateColumns: "1fr 1fr 1fr",
             gap: "12px 16px",
           }}>
-            {sensor.sensor_type === 52 ? (
+            {sensor.sensor_type === 28 ? (
+              <>
+                <DataCell label="CH 1" value={latest.channel_1} unit="mA" />
+                <DataCell label="CH 2" value={latest.channel_2} unit="mA" />
+                <DataCell label="CH 3" value={latest.channel_3} unit="mA" />
+              </>
+            ) : sensor.sensor_type === 52 ? (
               <>
                 <DataCell label="mA CH1" value={latest.mA1} unit="mA" />
                 <DataCell label="mA CH2" value={latest.mA2} unit="mA" />

@@ -37,5 +37,8 @@ class ReadingOut(BaseModel):
     mA2: float | None
     roll: float | None
     pitch: float | None
+    channel_1: float | None
+    channel_2: float | None
+    channel_3: float | None
 
     model_config = {"from_attributes": True}

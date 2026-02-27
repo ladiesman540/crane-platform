@@ -19,6 +19,9 @@ interface Reading {
   mA2: number | null;
   roll: number | null;
   pitch: number | null;
+  channel_1: number | null;
+  channel_2: number | null;
+  channel_3: number | null;
 }
 
 function getZone(vel: number | null) {
@@ -87,7 +90,7 @@ export default function SensorDetail() {
           z_velocity_mm_sec: data.z_velocity_mm_sec,
           battery_percent: data.battery_percent,
           x_rms_ACC_G: null, y_rms_ACC_G: null, z_rms_ACC_G: null,
-          mA1: data.mA1, mA2: data.mA2, roll: data.roll, pitch: data.pitch,
+          mA1: data.mA1, mA2: data.mA2, roll: data.roll, pitch: data.pitch, channel_1: data.channel_1, channel_2: data.channel_2, channel_3: data.channel_3,
         },
       ]);
     }
@@ -100,7 +103,7 @@ export default function SensorDetail() {
       ? d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " +
         d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
       : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    return { time, x: r.x_velocity_mm_sec, y: r.y_velocity_mm_sec, z: r.z_velocity_mm_sec, temp: r.temperature, mA1: r.mA1, mA2: r.mA2, roll: r.roll, pitch: r.pitch };
+    return { time, x: r.x_velocity_mm_sec, y: r.y_velocity_mm_sec, z: r.z_velocity_mm_sec, temp: r.temperature, mA1: r.mA1, mA2: r.mA2, roll: r.roll, pitch: r.pitch, ch1: r.channel_1, ch2: r.channel_2, ch3: r.channel_3 };
   });
 
   const latest = readings[readings.length - 1];
@@ -281,7 +284,12 @@ export default function SensorDetail() {
       {latest && (() => {
         const sType = sensor?.sensor_type;
         const stats: { label: string; value: number | null | undefined; unit: string; zone?: ReturnType<typeof getZone> }[] =
-          sType === 52 ? [
+          sType === 28 ? [
+            { label: "CHANNEL 1", value: latest.channel_1, unit: "mA" },
+            { label: "CHANNEL 2", value: latest.channel_2, unit: "mA" },
+            { label: "CHANNEL 3", value: latest.channel_3, unit: "mA" },
+            { label: "BATTERY", value: latest.battery_percent, unit: "%" },
+          ] : sType === 52 ? [
             { label: "mA CHANNEL 1", value: latest.mA1, unit: "mA" },
             { label: "mA CHANNEL 2", value: latest.mA2, unit: "mA" },
             { label: "BATTERY", value: latest.battery_percent, unit: "%" },
@@ -391,7 +399,44 @@ export default function SensorDetail() {
       </div>
 
       {/* Sensor-type-specific charts */}
-      {sensor?.sensor_type === 52 ? (
+      {sensor?.sensor_type === 28 ? (
+        /* 3-Channel Current Monitor Chart */
+        <div className="animate-in animate-in-delay-4" style={chartCardStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 15, color: "var(--text-primary)" }}>Current Monitor Trend</h2>
+            <div style={{ display: "flex", gap: 14, fontSize: 10, fontFamily: "var(--font-mono)" }}>
+              <span style={{ color: "#ef4444" }}>━ CH1</span>
+              <span style={{ color: "#3b82f6" }}>━ CH2</span>
+              <span style={{ color: "#10b981" }}>━ CH3</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+              <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 10", "dataMax + 10"]} tickFormatter={(v: number) => `${v}`} />
+              <Tooltip content={({ active, payload, label }: any) => {
+                if (!active || !payload) return null;
+                return (
+                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                    <div style={{ color: "var(--text-tertiary)", marginBottom: 6 }}>{label}</div>
+                    {payload.map((p: any) => (
+                      <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                        <div style={{ width: 8, height: 2, background: p.color, borderRadius: 1 }} />
+                        <span style={{ color: "var(--text-secondary)" }}>{p.name}:</span>
+                        <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>{p.value?.toFixed(0)} mA</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }} />
+              <Line type="monotone" dataKey="ch1" stroke="#ef4444" strokeWidth={1.5} dot={false} name="CH1" connectNulls />
+              <Line type="monotone" dataKey="ch2" stroke="#3b82f6" strokeWidth={1.5} dot={false} name="CH2" connectNulls />
+              <Line type="monotone" dataKey="ch3" stroke="#10b981" strokeWidth={1.5} dot={false} name="CH3" connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : sensor?.sensor_type === 52 ? (
         /* 4-20mA Current Chart */
         <div className="animate-in animate-in-delay-4" style={chartCardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>

@@ -44,6 +44,9 @@ class SensorReading(BaseModel):
     mA2: float | None = None
     roll: float | None = None
     pitch: float | None = None
+    channel_1: float | None = None
+    channel_2: float | None = None
+    channel_3: float | None = None
     sensor_data: dict | None = None
     fft: FFTPayload | None = None
 

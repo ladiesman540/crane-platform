@@ -44,5 +44,8 @@ class Reading(Base):
     mA2: Mapped[float | None] = mapped_column("mA2", Float)
     roll: Mapped[float | None] = mapped_column(Float)
     pitch: Mapped[float | None] = mapped_column(Float)
+    channel_1: Mapped[float | None] = mapped_column(Float)
+    channel_2: Mapped[float | None] = mapped_column(Float)
+    channel_3: Mapped[float | None] = mapped_column(Float)
 
     sensor = relationship("Sensor", back_populates="readings")
