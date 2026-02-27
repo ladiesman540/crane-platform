@@ -30,10 +30,18 @@ async def ingest_debug(request: Request):
 
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest(
+    request: Request,
     body: SensorReading,
     api_key: ApiKey = Depends(verify_api_key),
     db: AsyncSession = Depends(get_db),
 ):
+    # Log raw body to see what Node-RED sends
+    try:
+        raw = await request.json()
+        logger.warning(f"RAW BODY KEYS: {list(raw.keys())}")
+    except Exception:
+        pass
+
     # Look up sensor by MAC address
     result = await db.execute(select(Sensor).where(Sensor.mac_address == body.addr))
     sensor = result.scalar_one_or_none()
