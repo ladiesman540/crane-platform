@@ -1,4 +1,5 @@
 import struct
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -28,12 +29,14 @@ async def ingest(
     if sensor is None:
         raise HTTPException(status_code=404, detail=f"Sensor with addr {body.addr} not registered")
 
-    # Check for duplicate (same sensor + counter)
+    # Check for duplicate (same sensor + counter within last 10 minutes)
     if body.counter is not None:
+        recent_cutoff = datetime.now(timezone.utc) - timedelta(minutes=10)
         dup = await db.execute(
             select(Reading.id).where(
                 Reading.sensor_id == sensor.id,
                 Reading.counter == body.counter,
+                Reading.timestamp >= recent_cutoff,
             )
         )
         if dup.scalar_one_or_none() is not None:
