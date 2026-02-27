@@ -12,13 +12,6 @@ class SensorReading(BaseModel):
     addr: str
     firmware: int | None = None
     battery_percent: int | None = None
-
-    @field_validator("battery_percent", mode="before")
-    @classmethod
-    def coerce_battery_percent(cls, v):
-        if v is None:
-            return None
-        return int(float(v))
     counter: int | None = None
     sensor_type: int = 114
     mode: int | None = None
@@ -48,6 +41,13 @@ class SensorReading(BaseModel):
     rpm: int | None = None
     rssi: int | None = None
     fft: FFTPayload | None = None
+
+    @field_validator("battery_percent", mode="before")
+    @classmethod
+    def coerce_battery_percent(cls, v):
+        if v is None:
+            return None
+        return int(float(v))
 
 
 class IngestResponse(BaseModel):
