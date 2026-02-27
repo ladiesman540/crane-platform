@@ -40,6 +40,11 @@ class SensorReading(BaseModel):
     z_peak_three_Hz: float | None = None
     rpm: int | None = None
     rssi: int | None = None
+    mA1: float | None = None
+    mA2: float | None = None
+    roll: float | None = None
+    pitch: float | None = None
+    sensor_data: dict | None = None
     fft: FFTPayload | None = None
 
     @field_validator("battery_percent", mode="before")

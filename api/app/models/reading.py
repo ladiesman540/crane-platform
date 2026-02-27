@@ -40,5 +40,9 @@ class Reading(Base):
     z_peak_three_Hz: Mapped[float | None] = mapped_column(Float)
     rpm: Mapped[int | None] = mapped_column(Integer)
     rssi: Mapped[int | None] = mapped_column(SmallInteger)
+    mA1: Mapped[float | None] = mapped_column("mA1", Float)
+    mA2: Mapped[float | None] = mapped_column("mA2", Float)
+    roll: Mapped[float | None] = mapped_column(Float)
+    pitch: Mapped[float | None] = mapped_column(Float)
 
     sensor = relationship("Sensor", back_populates="readings")

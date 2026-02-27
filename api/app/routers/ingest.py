@@ -42,6 +42,14 @@ async def ingest(
         if dup.scalar_one_or_none() is not None:
             raise HTTPException(status_code=409, detail="Duplicate reading")
 
+    # Extract fields from nested sensor_data if present
+    sd = body.sensor_data or {}
+    mA1 = body.mA1 or sd.get("mA1")
+    mA2 = body.mA2 or sd.get("mA2")
+    roll = body.roll or sd.get("Roll") or sd.get("roll")
+    pitch = body.pitch or sd.get("Pitch") or sd.get("pitch")
+    temperature = body.temperature or sd.get("temperature")
+
     # Store summary reading
     reading = Reading(
         sensor_id=sensor.id,
@@ -49,7 +57,7 @@ async def ingest(
         firmware=body.firmware,
         battery_percent=body.battery_percent,
         odr=body.odr,
-        temperature=body.temperature,
+        temperature=temperature,
         x_rms_ACC_G=body.x_rms_ACC_G,
         x_max_ACC_G=body.x_max_ACC_G,
         x_velocity_mm_sec=body.x_velocity_mm_sec,
@@ -73,6 +81,10 @@ async def ingest(
         z_peak_three_Hz=body.z_peak_three_Hz,
         rpm=body.rpm,
         rssi=body.rssi,
+        mA1=mA1,
+        mA2=mA2,
+        roll=roll,
+        pitch=pitch,
     )
     db.add(reading)
     await db.flush()
@@ -97,11 +109,15 @@ async def ingest(
         "event": "sensor.reading",
         "sensor_id": str(sensor.id),
         "reading_id": reading.id,
-        "temperature": body.temperature,
+        "temperature": temperature,
         "x_velocity_mm_sec": body.x_velocity_mm_sec,
         "y_velocity_mm_sec": body.y_velocity_mm_sec,
         "z_velocity_mm_sec": body.z_velocity_mm_sec,
         "battery_percent": body.battery_percent,
+        "mA1": mA1,
+        "mA2": mA2,
+        "roll": roll,
+        "pitch": pitch,
     })
 
     return IngestResponse(status="ok", reading_id=reading.id)

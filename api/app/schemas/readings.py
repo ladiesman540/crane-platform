@@ -33,5 +33,9 @@ class ReadingOut(BaseModel):
     z_peak_three_Hz: float | None
     rpm: int | None
     rssi: int | None
+    mA1: float | None
+    mA2: float | None
+    roll: float | None
+    pitch: float | None
 
     model_config = {"from_attributes": True}

@@ -7,12 +7,17 @@ interface SensorSummary {
   id: string;
   label: string | null;
   mac_address: string;
+  sensor_type: number;
   latest?: {
     temperature: number | null;
     x_velocity_mm_sec: number | null;
     y_velocity_mm_sec: number | null;
     z_velocity_mm_sec: number | null;
     battery_percent: number | null;
+    mA1: number | null;
+    mA2: number | null;
+    roll: number | null;
+    pitch: number | null;
     timestamp: string;
   };
 }
@@ -77,6 +82,10 @@ export default function Dashboard() {
                   y_velocity_mm_sec: data.y_velocity_mm_sec,
                   z_velocity_mm_sec: data.z_velocity_mm_sec,
                   battery_percent: data.battery_percent,
+                  mA1: data.mA1,
+                  mA2: data.mA2,
+                  roll: data.roll,
+                  pitch: data.pitch,
                   timestamp: new Date().toISOString(),
                 },
               }
@@ -369,19 +378,40 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
           </div>
         </div>
 
-        {/* Data grid */}
+        {/* Data grid — sensor-type-specific */}
         {latest ? (
           <div style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr",
             gap: "12px 16px",
           }}>
-            <DataCell label="X VEL" value={latest.x_velocity_mm_sec} unit="mm/s" color={getZone(latest.x_velocity_mm_sec).color} />
-            <DataCell label="Y VEL" value={latest.y_velocity_mm_sec} unit="mm/s" color={getZone(latest.y_velocity_mm_sec).color} />
-            <DataCell label="Z VEL" value={latest.z_velocity_mm_sec} unit="mm/s" color={getZone(latest.z_velocity_mm_sec).color} />
-            <DataCell label="TEMP" value={latest.temperature} unit="°C" />
-            <DataCell label="BATTERY" value={latest.battery_percent} unit="%" warn={latest.battery_percent !== null && latest.battery_percent < 20} />
-            <DataCell label="MAX VEL" value={maxVel} unit="mm/s" color={zone.color} />
+            {sensor.sensor_type === 52 ? (
+              <>
+                <DataCell label="mA CH1" value={latest.mA1} unit="mA" />
+                <DataCell label="mA CH2" value={latest.mA2} unit="mA" />
+                <DataCell label="BATTERY" value={latest.battery_percent} unit="%" warn={latest.battery_percent !== null && latest.battery_percent < 20} />
+              </>
+            ) : sensor.sensor_type === 47 ? (
+              <>
+                <DataCell label="ROLL" value={latest.roll} unit="°" />
+                <DataCell label="PITCH" value={latest.pitch} unit="°" />
+                <DataCell label="BATTERY" value={latest.battery_percent} unit="%" warn={latest.battery_percent !== null && latest.battery_percent < 20} />
+              </>
+            ) : sensor.sensor_type === 39 ? (
+              <>
+                <DataCell label="TEMP" value={latest.temperature} unit="°C" />
+                <DataCell label="BATTERY" value={latest.battery_percent} unit="%" warn={latest.battery_percent !== null && latest.battery_percent < 20} />
+              </>
+            ) : (
+              <>
+                <DataCell label="X VEL" value={latest.x_velocity_mm_sec} unit="mm/s" color={getZone(latest.x_velocity_mm_sec).color} />
+                <DataCell label="Y VEL" value={latest.y_velocity_mm_sec} unit="mm/s" color={getZone(latest.y_velocity_mm_sec).color} />
+                <DataCell label="Z VEL" value={latest.z_velocity_mm_sec} unit="mm/s" color={getZone(latest.z_velocity_mm_sec).color} />
+                <DataCell label="TEMP" value={latest.temperature} unit="°C" />
+                <DataCell label="BATTERY" value={latest.battery_percent} unit="%" warn={latest.battery_percent !== null && latest.battery_percent < 20} />
+                <DataCell label="MAX VEL" value={maxVel} unit="mm/s" color={zone.color} />
+              </>
+            )}
           </div>
         ) : (
           <div style={{
