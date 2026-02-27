@@ -1,9 +1,12 @@
+import logging
 import struct
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 from app.auth import verify_api_key
 from app.db import get_db
@@ -15,6 +18,14 @@ from app.schemas.ingest import SensorReading, IngestResponse
 from app.websocket import manager
 
 router = APIRouter(prefix="/api/v1", tags=["ingest"])
+
+
+@router.post("/ingest-debug")
+async def ingest_debug(request: Request):
+    """Temporary debug endpoint to see raw POST body."""
+    raw = await request.json()
+    logger.warning(f"RAW INGEST BODY: {raw}")
+    return {"raw_keys": list(raw.keys()), "sensor_data": raw.get("sensor_data"), "has_sensor_data": "sensor_data" in raw}
 
 
 @router.post("/ingest", response_model=IngestResponse)
@@ -44,6 +55,7 @@ async def ingest(
 
     # Extract fields from nested sensor_data if present
     sd = body.sensor_data or {}
+    logger.warning(f"INGEST sensor_data={body.sensor_data} addr={body.addr} sensor_type={body.sensor_type}")
     mA1 = body.mA1 or sd.get("mA1")
     mA2 = body.mA2 or sd.get("mA2")
     roll = body.roll or sd.get("Roll") or sd.get("roll")
