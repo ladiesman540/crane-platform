@@ -10,9 +10,11 @@ from app.models.reading import Reading
 from app.models.fft_capture import FFTCapture
 from app.models.alert_rule import AlertRule
 from app.models.alert import Alert
+from app.models.crane_health_override import CraneHealthOverride
+from app.models.pm_schedule import PMSchedule
 
 __all__ = [
     "Organization", "User", "ApiKey", "Facility", "Crane",
     "Component", "Sensor", "BearingSpec", "Reading", "FFTCapture",
-    "AlertRule", "Alert",
+    "AlertRule", "Alert", "CraneHealthOverride", "PMSchedule",
 ]

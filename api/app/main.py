@@ -1,7 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, ingest, assets, readings
+from app.routers import auth, ingest, assets, readings, customer
 from app.websocket import manager
 
 app = FastAPI(title="Crane Predictive Maintenance API", version="1.0.0")
@@ -16,6 +16,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(ingest.router)
+app.include_router(customer.router)
 app.include_router(assets.router)
 app.include_router(readings.router)
 

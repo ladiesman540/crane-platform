@@ -32,14 +32,24 @@
   --zone-d: #ef4444;
   --zone-d-glow: rgba(239, 68, 68, 0.08);
 
+  /* Health */
+  --health-good: #059669;
+  --health-good-bg: #ecfdf5;
+  --health-fair: #d97706;
+  --health-fair-bg: #fffbeb;
+  --health-attention: #dc2626;
+  --health-attention-bg: #fef2f2;
+  --health-offline: #9ca3af;
+  --health-offline-bg: #f9fafb;
+
   /* Layout */
-  --radius: 8px;
+  --radius: 12px;
   --radius-sm: 4px;
-  --radius-lg: 12px;
+  --radius-lg: 16px;
   --sidebar-width: 260px;
 
   /* Typography */
-  --font-display: 'Chakra Petch', sans-serif;
+  --font-display: 'DM Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
 

@@ -8,8 +8,8 @@ interface Crane { id: string; facility_id: string; name: string; }
 interface Sensor { id: string; component_id: string; mac_address: string; label: string | null; }
 
 const NAV_ITEMS = [
-  { path: "/", label: "Overview", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
-  { path: "/alerts", label: "Alerts", icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" },
+  { path: "/legacy/dashboard", label: "Overview", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+  { path: "/legacy/alerts", label: "Alerts", icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" },
 ];
 
 export default function Layout() {
@@ -225,11 +225,11 @@ export default function Layout() {
                     </div>
 
                     {expanded[crane.id] && sensors.map((sensor) => {
-                      const isActive = location.pathname === `/sensors/${sensor.id}`;
+                      const isActive = location.pathname === `/legacy/sensors/${sensor.id}`;
                       return (
                         <Link
                           key={sensor.id}
-                          to={`/sensors/${sensor.id}`}
+                          to={`/legacy/sensors/${sensor.id}`}
                           style={{
                             display: "flex",
                             alignItems: "center",
