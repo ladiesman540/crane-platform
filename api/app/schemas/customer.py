@@ -53,6 +53,59 @@ class PMScheduleOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Log Entry ──
+
+class LogEntryCreate(BaseModel):
+    title: str
+    description: str | None = None
+
+
+class LogEntryUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+
+
+class LogEntryOut(BaseModel):
+    id: uuid.UUID
+    crane_id: uuid.UUID
+    title: str
+    description: str | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+# ── Service Call ──
+
+class ServiceCallCreate(BaseModel):
+    title: str
+    description: str | None = None
+    priority: str | None = None  # low | medium | high | critical
+    assigned_to: str | None = None
+
+
+class ServiceCallUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    priority: str | None = None
+    status: str | None = None  # open | in_progress | resolved
+    assigned_to: str | None = None
+
+
+class ServiceCallOut(BaseModel):
+    id: uuid.UUID
+    crane_id: uuid.UUID
+    title: str
+    description: str | None
+    priority: str
+    status: str
+    assigned_to: str | None
+    resolved_at: datetime | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # ── Sensor summary for fleet/detail ──
 
 class SensorSummary(BaseModel):
@@ -96,3 +149,5 @@ class CraneDetailResponse(BaseModel):
     health_override: HealthOverrideOut | None
     sensors: list[SensorSummary]
     pm_schedules: list[PMScheduleOut]
+    log_entries: list[LogEntryOut]
+    service_calls: list[ServiceCallOut]

@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, date, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case as sa_case
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,11 +18,15 @@ from app.models.sensor import Sensor
 from app.models.reading import Reading
 from app.models.crane_health_override import CraneHealthOverride
 from app.models.pm_schedule import PMSchedule
+from app.models.log_entry import LogEntry
+from app.models.service_call import ServiceCall
 from app.services.health import sensor_health, crane_health
 from app.schemas.customer import (
     FleetResponse, CraneFleetItem, CraneDetailResponse,
     SensorSummary, HealthOverrideIn, HealthOverrideOut,
     PMScheduleCreate, PMScheduleUpdate, PMScheduleOut,
+    LogEntryCreate, LogEntryUpdate, LogEntryOut,
+    ServiceCallCreate, ServiceCallUpdate, ServiceCallOut,
 )
 
 router = APIRouter(prefix="/api/v1/cranes", tags=["customer"])
@@ -180,6 +184,39 @@ async def get_crane_detail(crane_id: uuid.UUID, user: User = Depends(get_current
         for pm in pm_rows
     ]
 
+    # Log entries
+    le_result = await db.execute(
+        select(LogEntry)
+        .where(LogEntry.crane_id == crane_id)
+        .order_by(LogEntry.created_at.desc())
+    )
+    log_entries = [
+        LogEntryOut(
+            id=le.id, crane_id=le.crane_id, title=le.title,
+            description=le.description, created_at=le.created_at,
+        )
+        for le in le_result.scalars().all()
+    ]
+
+    # Service calls
+    sc_result = await db.execute(
+        select(ServiceCall)
+        .where(ServiceCall.crane_id == crane_id)
+        .order_by(
+            sa_case((ServiceCall.status != "resolved", 1), else_=2),
+            ServiceCall.created_at.desc(),
+        )
+    )
+    service_calls = [
+        ServiceCallOut(
+            id=sc.id, crane_id=sc.crane_id, title=sc.title,
+            description=sc.description, priority=sc.priority,
+            status=sc.status, assigned_to=sc.assigned_to,
+            resolved_at=sc.resolved_at, created_at=sc.created_at,
+        )
+        for sc in sc_result.scalars().all()
+    ]
+
     return CraneDetailResponse(
         id=crane.id,
         name=crane.name,
@@ -193,6 +230,8 @@ async def get_crane_detail(crane_id: uuid.UUID, user: User = Depends(get_current
         ) if override else None,
         sensors=sensor_summaries,
         pm_schedules=pm_schedules,
+        log_entries=log_entries,
+        service_calls=service_calls,
     )
 
 
@@ -374,4 +413,212 @@ async def delete_pm_schedule(
     if pm is None:
         raise HTTPException(status_code=404, detail="PM schedule not found")
     await db.delete(pm)
+    await db.commit()
+
+
+# ── Log Entries ──
+
+@router.get("/{crane_id}/log-entries", response_model=list[LogEntryOut])
+async def list_log_entries(
+    crane_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(LogEntry)
+        .where(LogEntry.crane_id == crane_id)
+        .order_by(LogEntry.created_at.desc())
+    )
+    return [
+        LogEntryOut(
+            id=le.id, crane_id=le.crane_id, title=le.title,
+            description=le.description, created_at=le.created_at,
+        )
+        for le in result.scalars().all()
+    ]
+
+
+@router.post("/{crane_id}/log-entries", response_model=LogEntryOut, status_code=201)
+async def create_log_entry(
+    crane_id: uuid.UUID,
+    body: LogEntryCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    le = LogEntry(
+        crane_id=crane_id,
+        title=body.title,
+        description=body.description,
+        created_by=user.id,
+    )
+    db.add(le)
+    await db.commit()
+    await db.refresh(le)
+    return LogEntryOut(
+        id=le.id, crane_id=le.crane_id, title=le.title,
+        description=le.description, created_at=le.created_at,
+    )
+
+
+@router.put("/{crane_id}/log-entries/{entry_id}", response_model=LogEntryOut)
+async def update_log_entry(
+    crane_id: uuid.UUID,
+    entry_id: uuid.UUID,
+    body: LogEntryUpdate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(LogEntry).where(LogEntry.id == entry_id, LogEntry.crane_id == crane_id)
+    )
+    le = result.scalar_one_or_none()
+    if le is None:
+        raise HTTPException(status_code=404, detail="Log entry not found")
+
+    if body.title is not None:
+        le.title = body.title
+    if body.description is not None:
+        le.description = body.description
+
+    await db.commit()
+    await db.refresh(le)
+    return LogEntryOut(
+        id=le.id, crane_id=le.crane_id, title=le.title,
+        description=le.description, created_at=le.created_at,
+    )
+
+
+@router.delete("/{crane_id}/log-entries/{entry_id}", status_code=204)
+async def delete_log_entry(
+    crane_id: uuid.UUID,
+    entry_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(LogEntry).where(LogEntry.id == entry_id, LogEntry.crane_id == crane_id)
+    )
+    le = result.scalar_one_or_none()
+    if le is None:
+        raise HTTPException(status_code=404, detail="Log entry not found")
+    await db.delete(le)
+    await db.commit()
+
+
+# ── Service Calls ──
+
+@router.get("/{crane_id}/service-calls", response_model=list[ServiceCallOut])
+async def list_service_calls(
+    crane_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(ServiceCall)
+        .where(ServiceCall.crane_id == crane_id)
+        .order_by(
+            sa_case((ServiceCall.status != "resolved", 1), else_=2),
+            ServiceCall.created_at.desc(),
+        )
+    )
+    return [
+        ServiceCallOut(
+            id=sc.id, crane_id=sc.crane_id, title=sc.title,
+            description=sc.description, priority=sc.priority,
+            status=sc.status, assigned_to=sc.assigned_to,
+            resolved_at=sc.resolved_at, created_at=sc.created_at,
+        )
+        for sc in result.scalars().all()
+    ]
+
+
+@router.post("/{crane_id}/service-calls", response_model=ServiceCallOut, status_code=201)
+async def create_service_call(
+    crane_id: uuid.UUID,
+    body: ServiceCallCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    sc = ServiceCall(
+        crane_id=crane_id,
+        title=body.title,
+        description=body.description,
+        assigned_to=body.assigned_to,
+        created_by=user.id,
+    )
+    if body.priority:
+        sc.priority = body.priority
+    db.add(sc)
+    await db.commit()
+    await db.refresh(sc)
+    return ServiceCallOut(
+        id=sc.id, crane_id=sc.crane_id, title=sc.title,
+        description=sc.description, priority=sc.priority,
+        status=sc.status, assigned_to=sc.assigned_to,
+        resolved_at=sc.resolved_at, created_at=sc.created_at,
+    )
+
+
+@router.put("/{crane_id}/service-calls/{call_id}", response_model=ServiceCallOut)
+async def update_service_call(
+    crane_id: uuid.UUID,
+    call_id: uuid.UUID,
+    body: ServiceCallUpdate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(ServiceCall).where(ServiceCall.id == call_id, ServiceCall.crane_id == crane_id)
+    )
+    sc = result.scalar_one_or_none()
+    if sc is None:
+        raise HTTPException(status_code=404, detail="Service call not found")
+
+    if body.title is not None:
+        sc.title = body.title
+    if body.description is not None:
+        sc.description = body.description
+    if body.priority is not None:
+        sc.priority = body.priority
+    if body.assigned_to is not None:
+        sc.assigned_to = body.assigned_to
+    if body.status is not None:
+        sc.status = body.status
+        if body.status == "resolved" and sc.resolved_at is None:
+            sc.resolved_at = datetime.now(timezone.utc)
+        elif body.status != "resolved":
+            sc.resolved_at = None
+
+    await db.commit()
+    await db.refresh(sc)
+    return ServiceCallOut(
+        id=sc.id, crane_id=sc.crane_id, title=sc.title,
+        description=sc.description, priority=sc.priority,
+        status=sc.status, assigned_to=sc.assigned_to,
+        resolved_at=sc.resolved_at, created_at=sc.created_at,
+    )
+
+
+@router.delete("/{crane_id}/service-calls/{call_id}", status_code=204)
+async def delete_service_call(
+    crane_id: uuid.UUID,
+    call_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _get_crane_or_404(crane_id, user, db)
+    result = await db.execute(
+        select(ServiceCall).where(ServiceCall.id == call_id, ServiceCall.crane_id == crane_id)
+    )
+    sc = result.scalar_one_or_none()
+    if sc is None:
+        raise HTTPException(status_code=404, detail="Service call not found")
+    await db.delete(sc)
     await db.commit()

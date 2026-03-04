@@ -6,7 +6,8 @@ import TabBar from "../components/TabBar";
 import CraneOverviewTab from "../components/CraneOverviewTab";
 import SensorListTab from "../components/SensorListTab";
 import PMScheduleTab from "../components/PMScheduleTab";
-import ComingSoon from "../components/ComingSoon";
+import LogBookTab from "../components/LogBookTab";
+import ServiceCallTab from "../components/ServiceCallTab";
 import HealthOverrideModal from "../components/HealthOverrideModal";
 
 interface SensorSummary {
@@ -28,6 +29,24 @@ interface PMSchedule {
   overdue: boolean;
 }
 
+interface LogEntry {
+  id: string;
+  title: string;
+  description: string | null;
+  created_at: string;
+}
+
+interface ServiceCall {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: string;
+  status: string;
+  assigned_to: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
 interface CraneDetail {
   id: string;
   name: string;
@@ -39,6 +58,8 @@ interface CraneDetail {
   health_override: { status: string; note: string | null; updated_at: string } | null;
   sensors: SensorSummary[];
   pm_schedules: PMSchedule[];
+  log_entries: LogEntry[];
+  service_calls: ServiceCall[];
 }
 
 const TABS = [
@@ -123,6 +144,7 @@ export default function CraneDetailPage() {
       {/* Tab content */}
       {tab === "overview" && (
         <CraneOverviewTab
+          craneId={crane.id}
           sensors={crane.sensors}
           health={crane.health}
           overrideNote={crane.health_override?.note || null}
@@ -138,8 +160,20 @@ export default function CraneDetailPage() {
           onRefresh={fetchCrane}
         />
       )}
-      {tab === "logbooks" && <ComingSoon feature="Log Books" />}
-      {tab === "service" && <ComingSoon feature="Service Calls" />}
+      {tab === "logbooks" && (
+        <LogBookTab
+          craneId={crane.id}
+          entries={crane.log_entries || []}
+          onRefresh={fetchCrane}
+        />
+      )}
+      {tab === "service" && (
+        <ServiceCallTab
+          craneId={crane.id}
+          calls={crane.service_calls || []}
+          onRefresh={fetchCrane}
+        />
+      )}
 
       {/* Override modal */}
       {showOverride && (

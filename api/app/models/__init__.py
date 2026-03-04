@@ -12,9 +12,12 @@ from app.models.alert_rule import AlertRule
 from app.models.alert import Alert
 from app.models.crane_health_override import CraneHealthOverride
 from app.models.pm_schedule import PMSchedule
+from app.models.log_entry import LogEntry
+from app.models.service_call import ServiceCall
 
 __all__ = [
     "Organization", "User", "ApiKey", "Facility", "Crane",
     "Component", "Sensor", "BearingSpec", "Reading", "FFTCapture",
     "AlertRule", "Alert", "CraneHealthOverride", "PMSchedule",
+    "LogEntry", "ServiceCall",
 ]

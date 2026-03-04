@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import HealthBadge from "./HealthBadge";
 
 interface SensorSummary {
@@ -27,11 +28,13 @@ function timeAgo(iso: string): string {
   return `${days}d ago`;
 }
 
-export default function CraneOverviewTab({ sensors, health, overrideNote }: {
+export default function CraneOverviewTab({ craneId, sensors, health, overrideNote }: {
+  craneId: string;
   sensors: SensorSummary[];
   health: string;
   overrideNote: string | null;
 }) {
+  const navigate = useNavigate();
   const counts = { good: 0, fair: 0, needs_attention: 0, offline: 0 };
   sensors.forEach((s) => { counts[s.health as keyof typeof counts]++; });
 
@@ -92,11 +95,22 @@ export default function CraneOverviewTab({ sensors, health, overrideNote }: {
         {sensors.map((s) => (
           <div
             key={s.id}
+            onClick={() => navigate(`/cranes/${craneId}/sensors/${s.id}`)}
             style={{
               background: "var(--bg-surface)",
               borderRadius: "var(--radius)",
               border: "1px solid var(--border)",
               padding: "16px 18px",
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "var(--border-strong)";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.boxShadow = "none";
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
