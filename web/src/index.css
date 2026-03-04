@@ -1,20 +1,20 @@
 :root {
-  /* ── Dark Industrial Palette ── */
-  --bg-root: #060a13;
-  --bg-surface: #0c1221;
-  --bg-elevated: #131b2e;
-  --bg-hover: #1a2540;
-  --bg-input: #0a0f1c;
+  /* ── Light Theme Palette ── */
+  --bg-root: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f0f2f5;
+  --bg-input: #f8f9fb;
 
-  --border: rgba(255, 255, 255, 0.05);
-  --border-strong: rgba(255, 255, 255, 0.1);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
   --border-glow: rgba(6, 182, 212, 0.2);
 
   /* Text */
-  --text-primary: #e2e8f0;
-  --text-secondary: #7e8ba4;
-  --text-tertiary: #455068;
-  --text-inverse: #060a13;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
 
   /* Accents */
   --accent: #06b6d4;
@@ -24,13 +24,13 @@
 
   /* ISO 10816 Zone Severity */
   --zone-a: #10b981;
-  --zone-a-glow: rgba(16, 185, 129, 0.1);
+  --zone-a-glow: rgba(16, 185, 129, 0.08);
   --zone-b: #06b6d4;
-  --zone-b-glow: rgba(6, 182, 212, 0.1);
+  --zone-b-glow: rgba(6, 182, 212, 0.08);
   --zone-c: #f59e0b;
-  --zone-c-glow: rgba(245, 158, 11, 0.1);
+  --zone-c-glow: rgba(245, 158, 11, 0.08);
   --zone-d: #ef4444;
-  --zone-d-glow: rgba(239, 68, 68, 0.1);
+  --zone-d-glow: rgba(239, 68, 68, 0.08);
 
   /* Layout */
   --radius: 8px;
@@ -64,8 +64,8 @@ body {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.15); }
 
 /* ── Animations ── */
 @keyframes pulse-live {
@@ -110,7 +110,7 @@ body {
 /* ── Utility ── */
 ::selection {
   background: var(--accent-dim);
-  color: white;
+  color: #1e293b;
 }
 
 input::placeholder {

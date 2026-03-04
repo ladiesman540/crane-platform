@@ -74,7 +74,7 @@ export default function Layout() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 0 20px rgba(6, 182, 212, 0.25)",
+            boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)",
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
               <path d="M2 20h20M6 20V8l6-4 6 4v12M10 20v-6h4v6" />
@@ -294,7 +294,7 @@ export default function Layout() {
               e.currentTarget.style.background = "rgba(239,68,68,0.05)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.borderColor = "var(--border-strong)";
               e.currentTarget.style.color = "var(--text-secondary)";
               e.currentTarget.style.background = "transparent";
             }}

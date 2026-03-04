@@ -23,7 +23,7 @@ async def list_readings(
     sensor_id: uuid.UUID,
     start: datetime | None = None,
     end: datetime | None = None,
-    limit: int = Query(default=100, le=1000),
+    limit: int = Query(default=100, le=10000),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):

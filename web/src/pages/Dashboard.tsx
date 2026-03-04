@@ -304,10 +304,10 @@ function SensorCard({ sensor, delay }: { sensor: SensorSummary; delay: number })
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = "var(--accent)" + "44";
         e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = "0 8px 32px rgba(6, 182, 212, 0.08)";
+        e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.06)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+        e.currentTarget.style.borderColor = "var(--border)";
         e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.boxShadow = "none";
       }}

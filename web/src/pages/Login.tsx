@@ -44,7 +44,7 @@ export default function Login() {
           position: "absolute",
           inset: 0,
           backgroundImage:
-            "linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px)",
+            "linear-gradient(rgba(6, 182, 212, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.06) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }} />
 
@@ -56,7 +56,7 @@ export default function Login() {
           width: 500,
           height: 500,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%)",
           filter: "blur(60px)",
         }} />
 
@@ -68,7 +68,7 @@ export default function Login() {
           width: 300,
           height: 300,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%)",
           filter: "blur(40px)",
         }} />
 
@@ -117,7 +117,7 @@ export default function Login() {
             Predictive<br />
             <span style={{
               color: "var(--accent)",
-              textShadow: "0 0 40px rgba(6, 182, 212, 0.3)",
+              textShadow: "0 0 40px rgba(6, 182, 212, 0.2)",
             }}>Maintenance</span>
           </h1>
           <p style={{
@@ -242,7 +242,7 @@ export default function Login() {
                 e.target.style.boxShadow = "0 0 0 3px var(--accent-glow)";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "rgba(255,255,255,0.1)";
+                e.target.style.borderColor = "var(--border-strong)";
                 e.target.style.boxShadow = "none";
               }}
             />
@@ -282,7 +282,7 @@ export default function Login() {
                 e.target.style.boxShadow = "0 0 0 3px var(--accent-glow)";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "rgba(255,255,255,0.1)";
+                e.target.style.borderColor = "var(--border-strong)";
                 e.target.style.boxShadow = "none";
               }}
             />
@@ -306,7 +306,7 @@ export default function Login() {
               cursor: loading ? "not-allowed" : "pointer",
               transition: "all 0.2s",
               letterSpacing: "0.04em",
-              boxShadow: loading ? "none" : "0 0 24px rgba(6, 182, 212, 0.2)",
+              boxShadow: loading ? "none" : "0 0 24px rgba(6, 182, 212, 0.15)",
             }}
           >
             {loading ? "Authenticating..." : "Sign in"}

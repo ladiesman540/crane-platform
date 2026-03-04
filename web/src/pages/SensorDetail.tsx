@@ -67,7 +67,7 @@ export default function SensorDetail() {
   useEffect(() => {
     if (!sensorId) return;
     const selected = RANGES.find((r) => r.key === range)!;
-    const params = new URLSearchParams({ sensor_id: sensorId, limit: "1000" });
+    const params = new URLSearchParams({ sensor_id: sensorId, limit: "10000" });
     if (selected.hours !== null) {
       const start = new Date(Date.now() - selected.hours * 3600000).toISOString();
       params.set("start", start);
@@ -126,7 +126,7 @@ export default function SensorDetail() {
       <div style={{
         background: "var(--bg-elevated)",
         border: "1px solid var(--border-strong)",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
         borderRadius: "var(--radius-sm)",
         padding: "10px 14px",
         fontSize: 11,
@@ -150,7 +150,7 @@ export default function SensorDetail() {
       <div style={{
         background: "var(--bg-elevated)",
         border: "1px solid var(--border-strong)",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
         borderRadius: "var(--radius-sm)",
         padding: "10px 14px",
         fontSize: 11,
@@ -168,7 +168,7 @@ export default function SensorDetail() {
     );
   };
 
-  const axisTickStyle = { fontSize: 10, fill: "#455068", fontFamily: "IBM Plex Mono" };
+  const axisTickStyle = { fontSize: 10, fill: "#94a3b8", fontFamily: "IBM Plex Mono" };
 
   return (
     <div className="animate-in">
@@ -412,13 +412,13 @@ export default function SensorDetail() {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
               <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 10", "dataMax + 10"]} tickFormatter={(v: number) => `${v}`} />
               <Tooltip content={({ active, payload, label }: any) => {
                 if (!active || !payload) return null;
                 return (
-                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.1)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
                     <div style={{ color: "var(--text-tertiary)", marginBottom: 6 }}>{label}</div>
                     {payload.map((p: any) => (
                       <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
@@ -448,13 +448,13 @@ export default function SensorDetail() {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
               <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 0.5", "dataMax + 0.5"]} tickFormatter={(v: number) => `${v} mA`} />
               <Tooltip content={({ active, payload, label }: any) => {
                 if (!active || !payload) return null;
                 return (
-                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.1)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
                     <div style={{ color: "var(--text-tertiary)", marginBottom: 6 }}>{label}</div>
                     {payload.map((p: any) => (
                       <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
@@ -483,13 +483,13 @@ export default function SensorDetail() {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
               <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 1", "dataMax + 1"]} tickFormatter={(v: number) => `${v}°`} />
               <Tooltip content={({ active, payload, label }: any) => {
                 if (!active || !payload) return null;
                 return (
-                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                  <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-strong)", boxShadow: "0 8px 24px rgba(0,0,0,0.1)", borderRadius: "var(--radius-sm)", padding: "10px 14px", fontSize: 11, fontFamily: "var(--font-mono)" }}>
                     <div style={{ color: "var(--text-tertiary)", marginBottom: 6 }}>{label}</div>
                     {payload.map((p: any) => (
                       <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
@@ -501,7 +501,7 @@ export default function SensorDetail() {
                   </div>
                 );
               }} />
-              <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeDasharray="6 4" />
+              <ReferenceLine y={0} stroke="rgba(0,0,0,0.1)" strokeDasharray="6 4" />
               <Line type="monotone" dataKey="roll" stroke="#ef4444" strokeWidth={1.5} dot={false} name="Roll" connectNulls />
               <Line type="monotone" dataKey="pitch" stroke="#3b82f6" strokeWidth={1.5} dot={false} name="Pitch" connectNulls />
             </LineChart>
@@ -516,8 +516,8 @@ export default function SensorDetail() {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
               <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 1", "dataMax + 1"]} tickFormatter={(v: number) => `${v}°`} />
               <Tooltip content={<TempTooltip />} />
               <Line type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={1.5} dot={false} name="Temperature" connectNulls />
@@ -538,13 +538,13 @@ export default function SensorDetail() {
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+                <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
                 <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={[0, "auto"]} />
                 <Tooltip content={<VelocityTooltip />} />
-                <ReferenceLine y={0.71} stroke="rgba(16,185,129,0.2)" strokeDasharray="6 4" />
-                <ReferenceLine y={1.12} stroke="rgba(6,182,212,0.2)" strokeDasharray="6 4" />
-                <ReferenceLine y={1.8} stroke="rgba(245,158,11,0.25)" strokeDasharray="6 4" />
+                <ReferenceLine y={0.71} stroke="rgba(16,185,129,0.3)" strokeDasharray="6 4" />
+                <ReferenceLine y={1.12} stroke="rgba(6,182,212,0.3)" strokeDasharray="6 4" />
+                <ReferenceLine y={1.8} stroke="rgba(245,158,11,0.35)" strokeDasharray="6 4" />
                 <Line type="monotone" dataKey="x" stroke="#ef4444" strokeWidth={1.5} dot={false} name="X axis" />
                 <Line type="monotone" dataKey="y" stroke="#3b82f6" strokeWidth={1.5} dot={false} name="Y axis" />
                 <Line type="monotone" dataKey="z" stroke="#10b981" strokeWidth={1.5} dot={false} name="Z axis" />
@@ -574,8 +574,8 @@ export default function SensorDetail() {
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                  <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(255,255,255,0.06)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+                  <XAxis dataKey="time" tick={axisTickStyle} axisLine={{ stroke: "rgba(0,0,0,0.1)" }} tickLine={false} interval={Math.max(0, Math.floor(chartData.length / 8) - 1)} />
                   <YAxis tick={axisTickStyle} axisLine={false} tickLine={false} domain={["dataMin - 1", "dataMax + 1"]} tickFormatter={(v: number) => `${v}°`} />
                   <Tooltip content={<TempTooltip />} />
                   <Line type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={1.5} dot={false} name="Temperature" connectNulls />
